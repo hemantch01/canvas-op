@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "canvas-op",
   "private": true,
   "scripts": {
     "build": "turbo run build",
