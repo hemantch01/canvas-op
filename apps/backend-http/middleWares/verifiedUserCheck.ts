@@ -1,5 +1,5 @@
 import { NextFunction,Request,Response } from "express";
-
+import {JWT_SECRET} from "@repo/common-backend/config"
 export const verifiedUser = (req:Request,res:Response,next:NextFunction)=>{
 
     const jwtToken = req.headers.token||"";
@@ -9,7 +9,7 @@ export const verifiedUser = (req:Request,res:Response,next:NextFunction)=>{
         })
     }
     // verify token
-
+    const secret = JWT_SECRET;
     if(verified){
         next();
     }
