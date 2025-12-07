@@ -1,6 +1,6 @@
 import express,{Router,Request,Response} from "express";
 import { verifiedUser } from "../middleWares/verifiedUserCheck";
-
+import {prismaClient} from "@repo/db/types";
 export const routeHandler: Router = express.Router();
 
 routeHandler.post("/signup",signupHandler);
@@ -9,6 +9,7 @@ routeHandler.post("/createRoom",verifiedUser,createRoomHandler);
 
 
 function signupHandler(req:Request,res:Response){
+    
 res.json({
     msg: "this is signup route"
 })
