@@ -12,13 +12,14 @@
     "@types/express": "^5.0.5"
   },
   "keywords": [],
-  
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.2.1",
+    "@repo/common-backend": "workspace:*",
     "@repo/db": "workspace:*",
-    "@repo/common-backend": "workspace:*"
+    "@repo/types": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.10",
+    "express": "^5.2.1"
   }
 }
