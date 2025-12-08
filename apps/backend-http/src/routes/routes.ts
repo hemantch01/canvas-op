@@ -1,5 +1,5 @@
 import express,{Router,Request,Response} from "express";
-import { verifiedUser } from "../middleWares/verifiedUserCheck";
+//import { verifiedUser } from "../middleWares/verifiedUserCheck";
 import {prisma} from "@repo/db";
 import { userSchema } from "@repo/types";
 export const routeHandler: Router = express.Router();
