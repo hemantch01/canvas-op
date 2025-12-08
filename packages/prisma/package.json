@@ -1,21 +1,23 @@
 {
-  "name": "@repo/types",
+  "name": "@repo/prisma",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc -b"
+  },
+  "exports":{
+    "./types":"./src/index.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*"
   },
-  "exports":{
-  ".":"./dist/index.js"
-  },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "zod": "^4.1.13"
+    "@prisma/client": "6.2.1",
+    "prisma": "6.2.1"
   }
 }
