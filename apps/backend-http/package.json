@@ -2,7 +2,6 @@
   "name": "backend-http",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "build": "tsc -b",
     "start": "node dist/index.js",
@@ -18,7 +17,7 @@
   "description": "",
   "dependencies": {
     "@repo/common-backend": "workspace:*",
-    "@repo/db": "workspace:*",
+    "@repo/prisma":"workspace:*",
     "@repo/types": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
     "dotenv": "^17.2.3",

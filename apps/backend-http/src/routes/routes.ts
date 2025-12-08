@@ -1,7 +1,6 @@
 import express,{Router,Request,Response} from "express";
 //import { verifiedUser } from "../middleWares/verifiedUserCheck";
-import {prisma} from "@repo/db";
-import "dotenv/config";
+ import {prisma} from "@repo/prisma/types";
 import { userSchema } from "@repo/types";
 export const routeHandler: Router = express.Router();
 
@@ -27,8 +26,6 @@ async function signupHandler(req:Request,res:Response){
     // add the  password dbcrypt
     //
     try{
-        console.log("RAW ENV STRING:", JSON.stringify(process.env.DATABASE_URL));
-        console.log("DATABASE_URL:", process.env.DATABASE_URL);
         await prisma.user.create({
             data:{
                 name,
