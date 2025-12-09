@@ -1,14 +1,14 @@
 import express,{Router,Request,Response} from "express";
-//import { verifiedUser } from "../middleWares/verifiedUserCheck";
+import { isVerifiedUser } from "../middleWares/verifiedUserCheck";
  import {prisma} from "@repo/prisma/types";
-import { userSchema } from "@repo/types";
+import { createRoomSchema, userSchema } from "@repo/types";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/common-backend/config";
 export const routeHandler: Router = express.Router();
 
 routeHandler.post("/signup",signupHandler);
 routeHandler.post("/signin",signinHandler);
-//routeHandler.post("/createRoom",verifiedUser,createRoomHandler);
+routeHandler.post("/createRoom",isVerifiedUser,createRoomHandler);
 
 
 async function signupHandler(req:Request,res:Response){
@@ -22,11 +22,8 @@ async function signupHandler(req:Request,res:Response){
         })
     }
 
-    // the db interaction code..
 
-    //
-    // add the  password dbcrypt
-    //
+    // add the  password dbcrypt library for password hashing
     try{
         await prisma.user.create({
             data:{
@@ -90,8 +87,34 @@ async function signinHandler(req:Request,res:Response){
 
 
 
-function createRoomHandler(req:Request,res:Response){
-res.json({
-    msg: "this is createRoom route"
-})
+async function createRoomHandler(req:Request,res:Response){
+    const parsedUser = createRoomSchema.safeParse({
+        name:req.body.RoomName
+    })
+    if(!parsedUser.success){
+        res.json({
+            msg : "arguments are not valid input"
+        })
+    }
+    const userId = req.userId;
+        if(typeof(userId)!=="string"){
+            return res.json({
+                msg: "garbage inputs"
+            })
+        }
+    try{
+       const createdRoom =  await prisma.room.create({
+            data:{
+                slug:req.body.roomName,
+                adminId:userId,
+            }
+        })
+        res.json({
+            roomId : createdRoom.id
+        })
+    }catch (e){
+        res.json({
+            error : e
+        })
+    }
 }
