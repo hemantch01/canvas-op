@@ -1,6 +1,6 @@
 import express,{Router,Request,Response} from "express";
 import { isVerifiedUser } from "../middleWares/verifiedUserCheck";
- import {prisma} from "@repo/prisma/types";
+import {prisma} from "@repo/prisma/types";
 import { createRoomSchema, userSchema } from "@repo/types";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/common-backend/config";
@@ -9,7 +9,7 @@ export const routeHandler: Router = express.Router();
 routeHandler.post("/signup",signupHandler);
 routeHandler.post("/signin",signinHandler);
 routeHandler.post("/createRoom",isVerifiedUser,createRoomHandler);
-
+routeHandler.get("/chats/:roomId",getChatsHandler);
 
 async function signupHandler(req:Request,res:Response){
     const {name ,email,password} = req.body;
@@ -118,3 +118,23 @@ async function createRoomHandler(req:Request,res:Response){
         })
     }
 }
+
+async function getChatsHandler(req:Request,res:Response){
+    // we have the room id 
+
+    const roomid = Number(req.params.roomId);
+    const chats = await prisma.chat.findMany({
+        where:{
+            id:roomid
+        },
+        orderBy:{
+            id:"desc"
+        },
+        take:50
+    })
+    res.json({
+        chats
+    })
+}
+
+
