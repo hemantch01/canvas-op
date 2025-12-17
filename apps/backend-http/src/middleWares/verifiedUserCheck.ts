@@ -7,7 +7,7 @@ export const isVerifiedUser = (req:Request,res:Response,next:NextFunction)=>{
     // verify token
   
         const isVerifiedUser  = jwt.verify(jwtToken,JWT_SECRET);
-        
+        console.log("user from token:  " ,isVerifiedUser);
         if(!isVerifiedUser){
             res.json({
                 msg:"invalid token failed to verify token"

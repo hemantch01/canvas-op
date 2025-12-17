@@ -71,6 +71,7 @@ async function signinHandler(req:Request,res:Response){
             })
         }
         const token = jwt.sign({
+            userId: user.id,
             email:req.body.email,
             name:req.body.name
         },JWT_SECRET);
@@ -89,7 +90,7 @@ async function signinHandler(req:Request,res:Response){
 
 async function createRoomHandler(req:Request,res:Response){
     const parsedUser = createRoomSchema.safeParse({
-        name:req.body.RoomName
+        name:req.body.roomName
     })
     if(!parsedUser.success){
         res.json({
@@ -97,6 +98,7 @@ async function createRoomHandler(req:Request,res:Response){
         })
     }
     const userId = req.userId;
+    console.log(userId);
         if(typeof(userId)!=="string"){
             return res.json({
                 msg: "garbage inputs"
