@@ -69,9 +69,10 @@ wss.on('connection',function connection(wsObj,request){
 
         if(parsedMsg.type==="chat"){
             const msg = parsedMsg.msg;
-            const roomId = parsedMsg.roomId;
+            const roomId = Number(parsedMsg.roomId);
             // also we have to store these chats in the db
-            await prisma.chat.create({
+           try{
+            const result  =  await prisma.chat.create({
                 data:{
                     roomId,
                     message:msg,
@@ -79,8 +80,12 @@ wss.on('connection',function connection(wsObj,request){
                 },
                 
             },)
+           }catch(e){
+            wsObj.send("problem with db");
+            console.log(e);
+           }
             userS.forEach(user=>{
-                if(user.rooms.includes(roomId)){
+                if(user.rooms.includes(roomId.toString())){
                     user.wsObj.send(JSON.stringify({
                         type:"chat",
                         msg,
