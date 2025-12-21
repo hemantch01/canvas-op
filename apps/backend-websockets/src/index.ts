@@ -48,7 +48,7 @@ wss.on('connection',function connection(wsObj,request){
         rooms:[],
         wsObj
     })
-
+    // TODO: add--> everyone except the sender is recieving message
     wsObj.on('message',async (msg)=>{
         const parsedMsg = JSON.parse(msg.toString());
         if(parsedMsg.type==="join_room"){
