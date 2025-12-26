@@ -1,5 +1,5 @@
 import express,{Router,Request,Response} from "express";
-import { isVerifiedUser } from "../middleWares/verifiedUserCheck";
+import { isVerifiedUser } from "../middleWares/verifiedUserCheck.js";
 import {prisma} from "@repo/prisma/types";
 import { createRoomSchema, userSchema } from "@repo/types";
 import jwt from "jsonwebtoken";
