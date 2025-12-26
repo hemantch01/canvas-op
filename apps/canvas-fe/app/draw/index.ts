@@ -4,6 +4,13 @@ type Shape =
   | { type: "rect"; x: number; y: number; w: number; h: number }
   | { type: "circle"; x: number; y: number; radius: number };
 
+  type Chat = {
+  id: number;
+  roomId: number;
+  message: string;
+  userId: string;
+};
+
 export async function initDraw(
   canvas: HTMLCanvasElement,
   roomId: string,
@@ -84,5 +91,7 @@ function drawShapes(
 
 export async function getExistingShapes(roomId: string): Promise<Shape[]> {
   const res = await axios.get(`http://localhost:3001/v1/chats/${roomId}`);
-  return res.data.chats.map((x: string) => JSON.parse(x));
+  console.log(res.data);
+  const fetchedChats = res.data.chats.map((x:Chat)=> JSON.parse(x.message));
+  return fetchedChats;
 }
