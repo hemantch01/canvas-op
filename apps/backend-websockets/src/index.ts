@@ -1,99 +1,78 @@
-import {WebSocketServer,WebSocket} from "ws";
-import {JWT_SECRET} from "@repo/common-backend/config";
+import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
-import {prisma} from "@repo/prisma/types";
-const wss = new WebSocketServer({port:8080});
+import { JWT_SECRET } from "@repo/common-backend/config";
+import { prisma } from "@repo/prisma/types";
 
-// TODO: make it more expressive
-function verifyUser(token :string):string|null{
-    try {
+const wss = new WebSocketServer({ port: 8080 });
+
+function verifyUser(token: string): string | null {
+  try {
     const decoded = jwt.verify(token, JWT_SECRET);
-
-    if (typeof decoded == "string") {
-      return null;
-    }
-
-    if (!decoded || !decoded.userId) {
-      return null;
-    }
-
-    return decoded.userId;
-  } catch(e) {
+    if (typeof decoded === "string") return null;
+    return decoded.userId ?? null;
+  } catch {
     return null;
   }
 }
 
-interface userT{
-    userId:string,
-    rooms:string[],
-    wsObj:WebSocket
+interface User {
+  userId: string;
+  rooms: string[];
+  ws: WebSocket;
 }
 
-// TODO: make state management more verbose and efficient before that make the room centric code first
-// maybe using state management library here
-const userS:userT[] = [];
+const users: User[] = [];
 
-wss.on('connection',function connection(wsObj,request){
-    const url = request.url;
-    const queryParam = new URLSearchParams(url?.split('?')[1]);
-    const token = queryParam.get('token')||"";
-    const validId = verifyUser(token);
-    if(validId === null){
-        wsObj.send("the token verification was not completed, problem with token");
-        wsObj.close();
-        return ;
+wss.on("connection", (ws, request) => {
+  const token = new URLSearchParams(request.url?.split("?")[1]).get("token") ?? "";
+  const userId = verifyUser(token);
+
+  if (!userId) {
+    ws.close();
+    return;
+  }
+
+  const user: User = { userId, rooms: [], ws };
+  users.push(user);
+
+  ws.on("message", async (raw) => {
+    const data = JSON.parse(raw.toString());
+
+    if (data.type === "join_room") {
+      user.rooms.push(data.roomId);
+      return;
     }
-    userS.push({
-        userId:validId,
-        rooms:[],
-        wsObj
-    })
-    // TODO: add--> everyone except the sender is recieving message
-    wsObj.on('message',async (msg)=>{
-        const parsedMsg = JSON.parse(msg.toString());
-        if(parsedMsg.type==="join_room"){
-            const user = userS.find((x)=>x.wsObj===wsObj);
-            if(!user){
-                return ;
-            }
-            user.rooms.push(parsedMsg.roomId);
-        }
 
-        if(parsedMsg.type==="leave_room"){
-            const user = userS.find((x)=>x.wsObj==wsObj);
-            if(!user){
-                return ;
-            }
-            user.rooms.filter((x)=> x===parsedMsg.roomId)
-        }
+    if (data.type === "leave_room") {
+      user.rooms = user.rooms.filter(r => r !== data.roomId);
+      return;
+    }
 
-        if(parsedMsg.type==="chat"){
-            const msg = parsedMsg.msg;
-            const roomId = Number(parsedMsg.roomId);
-            // also we have to store these chats in the db
-           try{
-            const result  =  await prisma.chat.create({
-                data:{
-                    roomId,
-                    message:msg,
-                    userId:validId
-                },
-                
-            },)
-           }catch(e){
-            wsObj.send("problem with db");
-            console.log(e);
-           }
-            userS.forEach(user=>{
-                if(user.rooms.includes(roomId.toString())){
-                    user.wsObj.send(JSON.stringify({
-                        type:"chat",
-                        msg,
-                        roomId
-                    }))
-                }
-            })
+    if (data.type === "chat") {
+      const roomId = Number(data.roomId);
+      const shape = data.shape;
+
+      if (!shape || Number.isNaN(roomId)) return;
+
+      // ✅ Prisma ALWAYS receives a string
+      await prisma.chat.create({
+        data: {
+          roomId,
+          userId,
+          message: JSON.stringify(shape)
         }
-        
-    })
-})
+      });
+
+      // Broadcast to room
+      users.forEach(u => {
+        if (u.rooms.includes(data.roomId)) {
+          u.ws.send(JSON.stringify({
+            type: "chat",
+            roomId: data.roomId,
+            shape
+          }));
+        }
+      });
+    }
+  });
+});
