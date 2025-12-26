@@ -105,6 +105,7 @@ async function createRoomHandler(req:Request,res:Response){
             })
         }
     try{
+        
        const createdRoom =  await prisma.room.create({
             data:{
                 slug:req.body.roomName,
