@@ -128,7 +128,7 @@ async function getChatsHandler(req:Request,res:Response){
     const roomid = Number(req.params.roomId);
     const chats = await prisma.chat.findMany({
         where:{
-            id:roomid
+            roomId:roomid
         },
         orderBy:{
             id:"desc"

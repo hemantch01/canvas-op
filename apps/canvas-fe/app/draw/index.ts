@@ -69,6 +69,11 @@ export async function initDraw(
       roomId,
       shape
     }));
+    console.log(JSON.stringify({
+      type: "chat",
+      roomId,
+      shape
+    }))
   });
 }
 
