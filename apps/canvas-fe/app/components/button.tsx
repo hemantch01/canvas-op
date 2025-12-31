@@ -9,6 +9,7 @@ export function Icon({
     onClick:()=>void,
     isSelected:Boolean
 }){
-    return <div className="pointer rounded-full bg-black hover::bg-grey p-2" onClick={onClick}>
+    return <div className={`pointer rounded-full ${isSelected?"bg-red-500 text-black":"bg-black "} hover::bg-grey p-2`} onClick={onClick}>
     {children}</div>
 }
+
