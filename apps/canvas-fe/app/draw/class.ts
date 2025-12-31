@@ -1,7 +1,12 @@
 import { Shape } from ".";
 import { getExistingShapes } from "./getShapes";
 
-export class draw {
+enum shapeType {
+    rectangle,
+    circle,
+    arrow
+}
+export class Draw {
     private canvas: HTMLCanvasElement;
     private roomId: string;
     private socket: WebSocket;
@@ -10,7 +15,7 @@ export class draw {
     private startX = 0;
     private startY = 0;
     private drawing: boolean;
-
+    private currentSelectedShape:shapeType;
     constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
         this.canvas = canvas;
         this.roomId = roomId;
@@ -21,6 +26,10 @@ export class draw {
         this.init();
         this.initHandlers();
         this.mouseHandlers();
+        this.currentSelectedShape= shapeType.circle;
+    }
+    setSelected(shape:shapeType){
+        this.currentSelectedShape = shape;
     }
     initHandlers() {
         this.socket.onmessage = (e) => {
