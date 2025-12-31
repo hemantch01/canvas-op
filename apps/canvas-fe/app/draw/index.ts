@@ -1,10 +1,10 @@
 import axios from "axios";
 
-type Shape =
+export type Shape =
   | { type: "rect"; x: number; y: number; w: number; h: number }
   | { type: "circle"; x: number; y: number; radius: number };
 
-  type Chat = {
+  export type Chat = {
   id: number;
   roomId: number;
   message: string;
